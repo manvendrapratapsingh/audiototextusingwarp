@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hindi Audio Transcription - AI Powered</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="app-header">
+            <h1><i class="fas fa-microphone"></i> Hindi Audio Transcription</h1>
+            <p class="subtitle">AI-powered speech-to-text conversion for Hindi audio files</p>
+        </header>
+
+        <!-- Upload Section -->
+        <div class="upload-section">
+            <div class="file-drop-area" id="file-drop-area">
+                <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                <p class="upload-text">Drag & drop your audio file here or <span class="browse-text">browse</span></p>
+                <input type="file" id="file-input" accept=".mp3,.wav,.m4a,.flac,.aac,.ogg,.wma" hidden>
+                <div class="supported-formats">
+                    <small>Supported formats: MP3, WAV, M4A, FLAC, AAC, OGG, WMA (Max: 500MB)</small>
+                </div>
+            </div>
+            
+            <div class="file-info" id="file-info" style="display: none;">
+                <div class="file-details">
+                    <i class="fas fa-file-audio"></i>
+                    <div>
+                        <p class="file-name" id="file-name"></p>
+                        <p class="file-size" id="file-size"></p>
+                    </div>
+                </div>
+                <button class="btn btn-primary" id="transcribe-btn" disabled>
+                    <i class="fas fa-play"></i> Start Transcription
+                </button>
+            </div>
+        </div>
+
+        <!-- Progress Section -->
+        <div class="progress-section" id="progress-section" style="display: none;">
+            <div class="progress-header">
+                <h3 id="progress-title">Processing...</h3>
+                <div class="progress-stats">
+                    <span id="progress-percentage">0%</span>
+                </div>
+            </div>
+            <div class="progress-bar-container">
+                <div class="progress-bar" id="progress-bar">
+                    <div class="progress-fill" id="progress-fill"></div>
+                </div>
+            </div>
+            <p class="progress-message" id="progress-message">Initializing...</p>
+        </div>
+
+        <!-- Results Section -->
+        <div class="results-section" id="results-section" style="display: none;">
+            <div class="results-header">
+                <h3><i class="fas fa-file-alt"></i> Transcription Results</h3>
+                <div class="result-actions">
+                    <button class="btn btn-secondary" id="copy-btn">
+                        <i class="fas fa-copy"></i> Copy
+                    </button>
+                    <button class="btn btn-secondary" id="download-btn">
+                        <i class="fas fa-download"></i> Download
+                    </button>
+                    <button class="btn btn-success" id="new-file-btn">
+                        <i class="fas fa-plus"></i> New File
+                    </button>
+                </div>
+            </div>
+            
+            <div class="transcription-container">
+                <textarea id="transcription-result" readonly placeholder="Transcribed text will appear here..."></textarea>
+            </div>
+            
+            <div class="transcription-stats">
+                <div class="stat-item">
+                    <span class="stat-label">Words:</span>
+                    <span class="stat-value" id="word-count">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Language:</span>
+                    <span class="stat-value" id="detected-language">Hindi</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Model:</span>
+                    <span class="stat-value" id="model-used">Whisper</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Processed:</span>
+                    <span class="stat-value" id="timestamp">-</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Error Section -->
+        <div class="error-section" id="error-section" style="display: none;">
+            <div class="error-message">
+                <i class="fas fa-exclamation-triangle"></i>
+                <p id="error-text"></p>
+                <button class="btn btn-primary" id="retry-btn">Try Again</button>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <p>Powered by OpenAI Whisper & FastAPI | Optimized for Hindi speech recognition</p>
+        </footer>
+    </div>
+
+    <!-- Toast notifications -->
+    <div id="toast-container"></div>
+
+    <script src="/static/js/main.js"></script>
+</body>
+</html>

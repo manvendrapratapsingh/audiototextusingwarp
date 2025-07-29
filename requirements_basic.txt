@@ -1,0 +1,7 @@
+fastapi
+uvicorn[standard]
+python-multipart
+whisper-ctranslate2
+ffmpeg-python
+aiofiles
+websockets
