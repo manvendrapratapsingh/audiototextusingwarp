@@ -188,10 +188,5 @@ function generateUniqueId() {
     return `client-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 }
 
-// Handle form submission (prevent default behavior)
-const uploadForm = document.getElementById('upload-form');
-uploadForm.addEventListener('submit', function(event) {
-    event.preventDefault();
-    startTranscription();
-});
+// Form submission is handled by button click, no form element needed
 

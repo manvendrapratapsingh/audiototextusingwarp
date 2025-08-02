@@ -29,4 +29,4 @@ echo "Press Ctrl+C to stop the server"
 echo ""
 
 # Run the FastAPI app with uvicorn
-cd backend && python app.py
+python backend/app.py

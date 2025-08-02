@@ -1,24 +1,36 @@
 # Core web framework
-fastapi==0.104.1
-uvicorn[standard]==0.24.0
-python-multipart==0.0.6
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
+python-multipart>=0.0.6
 
-# Audio processing and transcription (optimized for speed and low memory)
-faster-whisper==0.10.0
-openai-whisper==20250625
-torch==2.1.1
-torchaudio==2.1.1
+# Free Hindi ASR Models - Best accuracy for Hindi
+transformers>=4.36.0
+torch>=2.6.0
+torchaudio>=2.6.0
+datasets>=2.14.0
+librosa>=0.10.0
+soundfile>=0.12.0
+
+# Free speech recognition alternatives
+SpeechRecognition>=3.10.0
+
+# Hindi text processing (simplified)
+indic-nlp-library>=0.81
 
 # Audio preprocessing
-ffmpeg-python==0.2.0
-pydub==0.25.1
+ffmpeg-python>=0.2.0
+pydub>=0.25.0
 
 # File handling and utilities
-aiofiles==23.2.1
-python-magic==0.4.27
+aiofiles>=23.0.0
+python-magic>=0.4.0
 
 # Progress tracking
-websockets==12.0
+websockets>=12.0
 
 # Additional utilities
-numpy==1.25.2
+numpy>=1.26.0
+requests>=2.31.0
+
+# Additional dependencies for Jinja2 templates
+jinja2>=3.0.0
