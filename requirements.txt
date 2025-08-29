@@ -3,23 +3,25 @@ fastapi>=0.104.0
 uvicorn[standard]>=0.24.0
 python-multipart>=0.0.6
 
-# Free Hindi ASR Models - Best accuracy for Hindi
-transformers>=4.36.0
-torch>=2.6.0
-torchaudio>=2.6.0
-datasets>=2.14.0
+# *** BEST FREE ASR MODEL - OpenAI Whisper (100% FREE, EXCELLENT HINDI) ***
+openai-whisper>=20231117
+faster-whisper>=0.10.0
+torch>=2.0.0
+torchaudio>=2.0.0
+
+# Audio processing and enhancement
 librosa>=0.10.0
 soundfile>=0.12.0
-
-# Free speech recognition alternatives
-SpeechRecognition>=3.10.0
-
-# Hindi text processing (simplified)
-indic-nlp-library>=0.81
+noisereduce>=3.0.0
+numpy>=1.24.0
 
 # Audio preprocessing
 ffmpeg-python>=0.2.0
 pydub>=0.25.0
+
+# Hindi text processing and language detection
+indic-nlp-library>=0.81
+langdetect>=1.0.9
 
 # File handling and utilities
 aiofiles>=23.0.0
@@ -29,8 +31,18 @@ python-magic>=0.4.0
 websockets>=12.0
 
 # Additional utilities
-numpy>=1.26.0
 requests>=2.31.0
-
-# Additional dependencies for Jinja2 templates
 jinja2>=3.0.0
+
+# GPU acceleration (optional - uncomment if you have NVIDIA GPU for 10x faster transcription)
+# torch==2.0.0+cu118 -f https://download.pytorch.org/whl/torch_stable.html
+# torchaudio==2.0.0+cu118 -f https://download.pytorch.org/whl/torch_stable.html
+
+# Advanced features (uncomment to enable)
+pyannote-audio>=3.1.0  # Speaker diarization (who spoke when) - ENABLED
+# speechbrain>=0.5.0     # Additional audio enhancement
+
+# Development and testing
+# pytest>=7.0.0
+# black>=23.0.0
+# flake8>=6.0.0

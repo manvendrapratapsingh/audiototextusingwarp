@@ -17,7 +17,10 @@ const transcriptionResult = document.getElementById('transcription-result');
 const wordCountDisplay = document.getElementById('word-count');
 const detectedLanguage = document.getElementById('detected-language');
 const modelUsedDisplay = document.getElementById('model-used');
+const speakerCountDisplay = document.getElementById('speaker-count');
 const timestampDisplay = document.getElementById('timestamp');
+const speakerSection = document.getElementById('speaker-section');
+const speakerTimeline = document.getElementById('speaker-timeline');
 const copyButton = document.getElementById('copy-btn');
 const downloadButton = document.getElementById('download-btn');
 const newFileButton = document.getElementById('new-file-btn');
@@ -81,11 +84,16 @@ function startTranscription() {
     progressSection.style.display = 'block';
     resultsSection.style.display = 'none';
 
-    // Initialize WebSocket for progress updates
-    const clientId = generateUniqueId();
-    websocket = new WebSocket(`ws://${window.location.host}/ws/${clientId}`);
-    websocket.onmessage = updateProgress;
-    websocket.onclose = () => console.log('WebSocket connection closed');
+    // NOTE: Backend generates client_id internally; progress via WS may be limited
+    // We still open a generic socket to surface server-side broadcast if configured.
+    try {
+        const clientId = generateUniqueId();
+        websocket = new WebSocket(`ws://${window.location.host}/ws/${clientId}`);
+        websocket.onmessage = updateProgress;
+        websocket.onclose = () => console.log('WebSocket connection closed');
+    } catch (e) {
+        console.warn('WebSocket unavailable', e);
+    }
 
     // Upload file to server
     const formData = new FormData();
@@ -98,8 +106,17 @@ function startTranscription() {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
+            // Gather options
+            const language = (document.getElementById('language-select')?.value || 'hi');
+            const accuracy_mode = !!document.getElementById('accuracy-toggle')?.checked;
+            const prompt = (document.getElementById('prompt-text')?.value || '').trim();
+            const domainTermsRaw = (document.getElementById('domain-terms')?.value || '').trim();
+            const domain_terms = domainTermsRaw ? domainTermsRaw.split(',').map(s => s.trim()).filter(Boolean) : [];
+
             fetch(`/transcribe/${data.file_id}`, {
-                method: 'POST'
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ language, accuracy_mode, prompt, domain_terms })
             })
                 .then(response => response.json())
                 .then(handleTranscriptionResult)
@@ -135,9 +152,25 @@ function handleTranscriptionResult(data) {
     resultsSection.style.display = 'block';
     transcriptionResult.value = data.transcription.text;
     wordCountDisplay.textContent = data.transcription.word_count;
-    detectedLanguage.textContent = data.transcription.language;
+    detectedLanguage.textContent = data.transcription.language_name || data.transcription.language;
     modelUsedDisplay.textContent = data.transcription.model_used;
     timestampDisplay.textContent = new Date(data.transcription.timestamp).toLocaleString();
+    
+    // Handle speaker diarization results
+    if (data.transcription.speaker_diarization && data.transcription.speaker_diarization.enabled) {
+        const speakerData = data.transcription.speaker_diarization;
+        speakerCountDisplay.textContent = speakerData.speaker_count || 0;
+        
+        if (speakerData.segments && speakerData.segments.length > 0) {
+            displaySpeakerTimeline(speakerData.segments);
+            speakerSection.style.display = 'block';
+        } else {
+            speakerSection.style.display = 'none';
+        }
+    } else {
+        speakerCountDisplay.textContent = 'N/A';
+        speakerSection.style.display = 'none';
+    }
 }
 
 function copyToClipboard() {
@@ -188,5 +221,53 @@ function generateUniqueId() {
     return `client-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 }
 
-// Form submission is handled by button click, no form element needed
+function displaySpeakerTimeline(segments) {
+    speakerTimeline.innerHTML = '';
+    
+    if (!segments || segments.length === 0) {
+        speakerTimeline.innerHTML = '<p>No speaker segments detected</p>';
+        return;
+    }
+    
+    // Group segments by speaker
+    const speakers = {};
+    segments.forEach(segment => {
+        if (!speakers[segment.speaker]) {
+            speakers[segment.speaker] = [];
+        }
+        speakers[segment.speaker].push(segment);
+    });
+    
+    // Create speaker timeline
+    const timelineDiv = document.createElement('div');
+    timelineDiv.className = 'speaker-timeline';
+    
+    Object.keys(speakers).forEach((speaker, index) => {
+        const speakerDiv = document.createElement('div');
+        speakerDiv.className = 'speaker-info';
+        speakerDiv.innerHTML = `
+            <div class="speaker-header">
+                <span class="speaker-label">Speaker ${speaker}</span>
+                <span class="speaker-time">${speakers[speaker].length} segments</span>
+            </div>
+            <div class="speaker-segments">
+                ${speakers[speaker].map(seg => 
+                    `<span class="segment" title="${seg.start_time}s - ${seg.end_time}s">
+                        ${formatTime(seg.start_time)} - ${formatTime(seg.end_time)}
+                     </span>`
+                ).join('')}
+            </div>
+        `;
+        timelineDiv.appendChild(speakerDiv);
+    });
+    
+    speakerTimeline.appendChild(timelineDiv);
+}
 
+function formatTime(seconds) {
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+}
+
+// Form submission is handled by button click, no form element needed

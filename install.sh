@@ -1,113 +1,102 @@
 #!/bin/bash
 
-# Hindi Audio Transcription Web App Installation Script
-# This script sets up the environment and installs all dependencies
+# Advanced Audio Transcription - Installation Script
+# Powered by OpenAI Whisper for exceptional Hindi accuracy
 
 set -e  # Exit on any error
 
-echo "🎤 Hindi Audio Transcription Web App Setup"
-echo "=========================================="
+echo "🚀 Installing Advanced Audio Transcription Service..."
+echo "📦 This will install OpenAI Whisper for superior Hindi transcription"
+echo "=============================================================="
 
-# Check if Python 3.8+ is available
+# Check Python version
 if ! command -v python3 &> /dev/null; then
-    echo "❌ Python 3 is not installed. Please install Python 3.8 or higher."
+    echo "❌ Python 3 is required but not installed. Please install Python 3.8+"
     exit 1
 fi
 
-PYTHON_VERSION=$(python3 --version 2>&1 | awk '{print $2}' | cut -d. -f1,2)
-REQUIRED_VERSION="3.8"
+PYTHON_VERSION=$(python3 -c 'import sys; print(".".join(map(str, sys.version_info[:2])))')
+echo "🐍 Python version: $PYTHON_VERSION"
 
-if [ "$(printf '%s\n' "$REQUIRED_VERSION" "$PYTHON_VERSION" | sort -V | head -n1)" != "$REQUIRED_VERSION" ]; then
-    echo "❌ Python $PYTHON_VERSION found, but version $REQUIRED_VERSION or higher is required."
+# Verify Python version is 3.8+
+if python3 -c "import sys; exit(0 if sys.version_info >= (3, 8) else 1)"; then
+    echo "✅ Python version is compatible"
+else
+    echo "❌ Python 3.8+ is required. Found: $PYTHON_VERSION"
     exit 1
 fi
 
-echo "✅ Python $PYTHON_VERSION found"
-
-# Check if FFmpeg is installed
+# Check FFmpeg
 if ! command -v ffmpeg &> /dev/null; then
-    echo "⚠️  FFmpeg not found. Installing..."
-    
-    if [[ "$OSTYPE" == "darwin"* ]]; then
-        # macOS
-        if command -v brew &> /dev/null; then
-            brew install ffmpeg
-        else
-            echo "❌ Homebrew not found. Please install FFmpeg manually:"
-            echo "   Visit: https://ffmpeg.org/download.html"
-            exit 1
-        fi
-    elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
-        # Linux
-        if command -v apt-get &> /dev/null; then
-            sudo apt-get update
-            sudo apt-get install -y ffmpeg
-        elif command -v yum &> /dev/null; then
-            sudo yum install -y ffmpeg
-        elif command -v dnf &> /dev/null; then
-            sudo dnf install -y ffmpeg
-        else
-            echo "❌ Package manager not supported. Please install FFmpeg manually."
-            exit 1
-        fi
-    else
-        echo "❌ Unsupported OS. Please install FFmpeg manually."
+    echo "⚠️  FFmpeg not found. Please install FFmpeg:"
+    echo "   macOS: brew install ffmpeg"
+    echo "   Ubuntu: sudo apt install ffmpeg"
+    echo "   Windows: Download from https://ffmpeg.org/"
+    read -p "Continue anyway? (y/n): " -n 1 -r
+    echo
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
         exit 1
     fi
+else
+    echo "✅ FFmpeg is available"
 fi
 
-echo "✅ FFmpeg is available"
-
 # Create virtual environment
-echo "📦 Creating Python virtual environment..."
+echo "📁 Creating virtual environment..."
 python3 -m venv venv
-
-# Activate virtual environment
 source venv/bin/activate
 
 # Upgrade pip
-echo "📦 Upgrading pip..."
+echo "⬆️  Upgrading pip..."
 pip install --upgrade pip
 
-# Install PyTorch with CPU support (smaller footprint)
-echo "🔥 Installing PyTorch (CPU version for faster startup)..."
-pip install torch torchaudio --index-url https://download.pytorch.org/whl/cpu
-
-# Install other requirements
-echo "📦 Installing Python dependencies..."
+# Install dependencies
+echo "📚 Installing Python dependencies..."
+echo "   This may take a few minutes as it downloads AI models..."
 pip install -r requirements.txt
+
+# Pre-download Whisper model (optional)
+echo "🤖 Pre-downloading Whisper model for faster first run..."
+python3 -c "
+try:
+    import whisper
+    print('🔄 Downloading Whisper large-v3 model...')
+    whisper.load_model('large-v3')
+    print('✅ Model downloaded successfully!')
+except Exception as e:
+    print('⚠️  Model will be downloaded on first use')
+    print(f'   Error: {e}')
+" 2>/dev/null || echo "   Model will be downloaded on first use"
 
 # Create necessary directories
 echo "📁 Creating directories..."
 mkdir -p uploads temp/cache temp/chunks logs
 
-# Download the Whisper base model (will be cached)
-echo "🤖 Pre-downloading Whisper base model..."
-python3 -c "
-import whisper
-print('Downloading Whisper base model...')
-model = whisper.load_model('base')
-print('Model downloaded and cached successfully!')
-"
-
 # Set permissions
 chmod +x run.sh
 
 echo ""
-echo "🎉 Installation completed successfully!"
+echo "✅ Installation completed successfully!"
 echo ""
-echo "📋 Next steps:"
-echo "1. Run the application: ./run.sh"
-echo "2. Open your browser and go to: http://localhost:8000"
-echo "3. Upload a Hindi audio file and test the transcription"
+echo "🎯 Key Features:"
+echo "   • OpenAI Whisper large-v3 model for exceptional Hindi accuracy"
+echo "   • Faster-whisper for 4x speed improvement"
+echo "   • Support for 95+ languages with auto-detection"
+echo "   • Audio enhancement and noise reduction"
+echo "   • Supports files up to 500MB"
+echo ""
+echo "🚀 To start the application:"
+echo "   ./run.sh"
+echo ""
+echo "🌐 Then open: http://localhost:8000"
 echo ""
 echo "💡 Tips:"
-echo "- For better performance, use audio files under 100MB"
-echo "- Supported formats: MP3, WAV, M4A, FLAC, AAC, OGG, WMA"
-echo "- The first transcription may take longer due to model loading"
+echo "   • For GPU acceleration (10x faster), install CUDA and uncomment GPU dependencies in requirements.txt"
+echo "   • Large model provides best Hindi accuracy but requires ~3GB RAM"
+echo "   • Use 'medium' model in config.py for faster processing on low-memory systems"
+echo "   • First transcription may take longer due to model loading"
 echo ""
-echo "🛠️  If you encounter issues:"
-echo "- Check the logs in the logs/ directory"
-echo "- Ensure your audio file is in a supported format"
-echo "- For very long files, the app will automatically chunk them"
-echo ""
+echo "🛠️  Troubleshooting:"
+echo "   • Check logs/ directory for error details"
+echo "   • Ensure audio files are in supported formats"
+echo "   • For issues, check: https://github.com/openai/whisper"

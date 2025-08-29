@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hindi Audio Transcription - AI Powered</title>
+    <title>Advanced Audio Transcription - Whisper AI Powered</title>
     <link rel="stylesheet" href="/static/css/style.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
@@ -11,8 +11,8 @@
     <div class="container">
         <!-- Header -->
         <header class="app-header">
-            <h1><i class="fas fa-microphone"></i> Hindi Audio Transcription</h1>
-            <p class="subtitle">AI-powered speech-to-text conversion for Hindi audio files</p>
+            <h1><i class="fas fa-microphone"></i> Advanced Audio Transcription</h1>
+            <p class="subtitle">Powered by OpenAI Whisper - Exceptional Hindi accuracy with 95+ language support</p>
         </header>
 
         <!-- Upload Section -->
@@ -22,7 +22,8 @@
                 <p class="upload-text">Drag & drop your audio file here or <span class="browse-text">browse</span></p>
                 <input type="file" id="file-input" accept=".mp3,.wav,.m4a,.flac,.aac,.ogg,.wma" hidden>
                 <div class="supported-formats">
-                    <small>Supported formats: MP3, WAV, M4A, FLAC, AAC, OGG, WMA (Max: 500MB)</small>
+                    <small>Supported formats: MP3, WAV, M4A, FLAC, AAC, OGG, WMA, WebM, MP4 (Max: 500MB)</small>
+                    <small>🎯 Optimized for Hindi | 🌍 Supports 95+ languages | 🚀 Powered by OpenAI Whisper</small>
                 </div>
             </div>
             
@@ -37,6 +38,46 @@
                 <button class="btn btn-primary" id="transcribe-btn" disabled>
                     <i class="fas fa-play"></i> Start Transcription
                 </button>
+            </div>
+        </div>
+
+        <!-- Options Section -->
+        <div class="options-section">
+            <h3 class="section-title"><i class="fas fa-sliders-h"></i> Transcription Options</h3>
+            <div class="options-grid">
+                <div class="option-item">
+                    <label for="language-select">Language</label>
+                    <select id="language-select">
+                        <option value="hi" selected>Hindi (hi)</option>
+                        <option value="en">English (en)</option>
+                        <option value="bn">Bengali (bn)</option>
+                        <option value="mr">Marathi (mr)</option>
+                        <option value="ta">Tamil (ta)</option>
+                        <option value="te">Telugu (te)</option>
+                        <option value="gu">Gujarati (gu)</option>
+                        <option value="pa">Punjabi (pa)</option>
+                        <option value="ur">Urdu (ur)</option>
+                    </select>
+                </div>
+                <div class="option-item">
+                    <label for="accuracy-toggle">Accuracy Mode</label>
+                    <div class="toggle">
+                        <input type="checkbox" id="accuracy-toggle" />
+                        <span>Prioritize correctness (slightly slower)</span>
+                    </div>
+                </div>
+            </div>
+            <div class="options-grid">
+                <div class="option-item wide">
+                    <label for="prompt-text">Initial Prompt (Hindi recommended)</label>
+                    <textarea id="prompt-text" placeholder="उदाहरण: कृपया शुद्ध हिंदी में स्पष्ट और सरल प्रतिलेखन दें।"></textarea>
+                </div>
+            </div>
+            <div class="options-grid">
+                <div class="option-item wide">
+                    <label for="domain-terms">Domain Terms (comma-separated)</label>
+                    <input type="text" id="domain-terms" placeholder="उदा: जीएसटी, आधार, आयकर, एनआईसी" />
+                </div>
             </div>
         </div>
 
@@ -91,9 +132,19 @@
                     <span class="stat-value" id="model-used">Whisper</span>
                 </div>
                 <div class="stat-item">
+                    <span class="stat-label">Speakers:</span>
+                    <span class="stat-value" id="speaker-count">-</span>
+                </div>
+                <div class="stat-item">
                     <span class="stat-label">Processed:</span>
                     <span class="stat-value" id="timestamp">-</span>
                 </div>
+            </div>
+            
+            <!-- Speaker Diarization Results -->
+            <div class="speaker-diarization" id="speaker-section" style="display: none;">
+                <h4><i class="fas fa-users"></i> Speaker Analysis</h4>
+                <div id="speaker-timeline"></div>
             </div>
         </div>
 
@@ -108,7 +159,7 @@
 
         <!-- Footer -->
         <footer class="app-footer">
-            <p>Powered by OpenAI Whisper & FastAPI | Optimized for Hindi speech recognition</p>
+            <p>Powered by OpenAI Whisper & FastAPI | Superior Hindi accuracy with 95+ language support</p>
         </footer>
     </div>
 
